@@ -1,10 +1,11 @@
 package XMLProcessing.carDealerEx.service;
 
+import XMLProcessing.carDealerEx.entity.customer.OrderedCustomersExportDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class QueryExportDataImpl implements QueryExportData {
+public class ExportQueryDataImpl implements ExportQueryData {
     private static final String CAR_DEALER_EXPORT_DATA_FOLDER_PATH = "src\\main\\resources\\jsonExercises\\carDealerExportData\\";
     private static final String ORDERED_CUSTOMERS_JSON_FILE = "ordered-customers.json";
     private static final String TOYOTA_CARS_JSON_FILE = "toyota-cars.json";
@@ -17,7 +18,7 @@ public class QueryExportDataImpl implements QueryExportData {
 
 
     @Autowired
-    public QueryExportDataImpl(CustomerService customerService, CarService carService,
+    public ExportQueryDataImpl(CustomerService customerService, CarService carService,
                                SupplierService supplierService) {
         this.supplierService = supplierService;
         this.customerService = customerService;
@@ -26,4 +27,8 @@ public class QueryExportDataImpl implements QueryExportData {
     }
 
 
+    @Override
+    public void getAllOrderedCustomers() {
+        OrderedCustomersExportDTO customers =  this.customerService.selectOrderedCustomers();
+    }
 }

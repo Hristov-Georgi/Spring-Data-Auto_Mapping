@@ -1,7 +1,7 @@
 package XMLProcessing.carDealerEx;
 
 import XMLProcessing.carDealerEx.service.ImportData;
-import XMLProcessing.carDealerEx.service.QueryExportData;
+import XMLProcessing.carDealerEx.service.ExportQueryData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -12,12 +12,12 @@ import java.util.Scanner;
 public class CarDealerCommandRunner implements CommandLineRunner {
 
     private final ImportData importData;
-    private final QueryExportData queryExportData;
+    private final ExportQueryData exportQueryData;
 
     @Autowired
-    public CarDealerCommandRunner(ImportData importData, QueryExportData queryExportData) {
+    public CarDealerCommandRunner(ImportData importData, ExportQueryData exportQueryData) {
         this.importData = importData;
-        this.queryExportData = queryExportData;
+        this.exportQueryData = exportQueryData;
 
     }
 
@@ -31,6 +31,7 @@ public class CarDealerCommandRunner implements CommandLineRunner {
 //        this.importData.importCars();
 //        this.importData.importCustomers();
 //        this.importData.importSales();
+        this.exportQueryData.getAllOrderedCustomers();
     }
 
 
