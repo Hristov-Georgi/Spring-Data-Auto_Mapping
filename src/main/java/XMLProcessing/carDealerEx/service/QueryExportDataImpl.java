@@ -1,16 +1,7 @@
 package XMLProcessing.carDealerEx.service;
 
-import XMLProcessing.carDealerEx.entity.car.CarsByMakeModelDistancePartsList;
-import XMLProcessing.carDealerEx.entity.car.CarsDataExportDTO;
-import XMLProcessing.carDealerEx.entity.supplier.SupplierDataExportDTO;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
 
 @Service
 public class QueryExportDataImpl implements QueryExportData {

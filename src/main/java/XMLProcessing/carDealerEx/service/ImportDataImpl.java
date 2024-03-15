@@ -5,19 +5,27 @@ import XMLProcessing.carDealerEx.entity.Discount;
 import XMLProcessing.carDealerEx.entity.Sale;
 import XMLProcessing.carDealerEx.entity.car.Car;
 import XMLProcessing.carDealerEx.entity.car.CarImportDTO;
+import XMLProcessing.carDealerEx.entity.car.CarImportWrapperDTO;
 import XMLProcessing.carDealerEx.entity.customer.Customer;
 import XMLProcessing.carDealerEx.entity.customer.CustomerImportDTO;
+import XMLProcessing.carDealerEx.entity.customer.CustomerImportWrapperDTO;
 import XMLProcessing.carDealerEx.entity.part.Part;
 import XMLProcessing.carDealerEx.entity.part.PartsImportDTO;
+import XMLProcessing.carDealerEx.entity.part.PartsImportWrapperDTO;
 import XMLProcessing.carDealerEx.entity.supplier.Supplier;
 import XMLProcessing.carDealerEx.entity.supplier.SupplierImportDTO;
+import XMLProcessing.carDealerEx.entity.supplier.SupplierImportWrapperDTO;
 import XMLProcessing.carDealerEx.repositories.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -27,11 +35,11 @@ import java.util.stream.Collectors;
 @Service
 public class ImportDataImpl implements ImportData {
     private static final String
-            CAR_DEALER_RESOURCES_FOLDER_PATH = "src\\main\\resources\\jsonExercises\\carDealerImportResources\\";
-    private static final String CAR_JSON_FILE = "cars.json";
-    private static final String CUSTOMER_JSON_FILE = "customers.json";
-    private static final String PARTS_JSON_FILE = "parts.json";
-    private static final String SUPPLIERS_JSON_FILE = "suppliers.json";
+            CAR_DEALER_XML_IMPORT_DATA_FOLDER_PATH = "src\\main\\resources\\xmlExercises\\carDealerImportData\\";
+    private static final String CARS_XML_FILE = "cars.xml";
+    private static final String CUSTOMER_XML_FILE = "customers.xml";
+    private static final String PARTS_XML_FILE = "parts.xml";
+    private static final String SUPPLIERS_XML_FILE = "suppliers.xml";
 
     private final ModelMapper modelMapper;
     private final CarRepository carRepository;
@@ -54,24 +62,74 @@ public class ImportDataImpl implements ImportData {
 
 
     @Override
-    public void importSuppliers() throws IOException {
+    public void importSuppliers() throws IOException, JAXBException {
+        BufferedReader bufferedReader = new BufferedReader(
+                new FileReader(CAR_DEALER_XML_IMPORT_DATA_FOLDER_PATH + SUPPLIERS_XML_FILE));
 
+        JAXBContext jaxbContext = JAXBContext.newInstance(SupplierImportWrapperDTO.class);
+
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        SupplierImportWrapperDTO suppliers = (SupplierImportWrapperDTO) unmarshaller.unmarshal(bufferedReader);
+
+        List<Supplier> supplierList = suppliers.getSuppliers().stream()
+                .map(s -> this.modelMapper.map(s, Supplier.class))
+                .toList();
+
+        this.supplierRepository.saveAll(supplierList);
     }
 
     @Override
-    public void importParts() throws IOException {
+    public void importParts() throws IOException, JAXBException {
+        BufferedReader bufferedReader = new BufferedReader(
+                new FileReader(CAR_DEALER_XML_IMPORT_DATA_FOLDER_PATH + PARTS_XML_FILE));
 
+        JAXBContext jaxbContext = JAXBContext.newInstance(PartsImportWrapperDTO.class);
+
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        PartsImportWrapperDTO partsDTO = (PartsImportWrapperDTO) unmarshaller.unmarshal(bufferedReader);
+
+        List<Part> partList = partsDTO.getParts().stream()
+                .map(p -> this.modelMapper.map(p, Part.class))
+                .map(this::setRandomSupplier)
+                .toList();
+
+        this.partRepository.saveAll(partList);
     }
 
     @Override
-    public void importCars() throws IOException {
+    public void importCars() throws IOException, JAXBException {
+        BufferedReader bufferedReader = new BufferedReader(
+                new FileReader(CAR_DEALER_XML_IMPORT_DATA_FOLDER_PATH + CARS_XML_FILE));
 
+        JAXBContext jaxbContext = JAXBContext.newInstance(CarImportWrapperDTO.class);
 
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        CarImportWrapperDTO carsDTO = (CarImportWrapperDTO) unmarshaller.unmarshal(bufferedReader);
+
+        List<Car> carList = carsDTO.getCars().stream()
+                .map(c -> this.modelMapper.map(c, Car.class))
+                .map(this::setRandomParts)
+                .toList();
+
+        this.carRepository.saveAll(carList);
     }
 
     @Override
-    public void importCustomers() throws IOException {
+    public void importCustomers() throws IOException, JAXBException {
+        BufferedReader bufferedReader = new BufferedReader(
+                new FileReader(CAR_DEALER_XML_IMPORT_DATA_FOLDER_PATH + CUSTOMER_XML_FILE));
 
+        JAXBContext jaxbContext = JAXBContext.newInstance(CustomerImportWrapperDTO.class);
+
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+        CustomerImportWrapperDTO customersDTO = (CustomerImportWrapperDTO) unmarshaller.unmarshal(bufferedReader);
+
+        List<Customer> customerList = customersDTO.getCustomers().stream()
+                .map(c -> this.modelMapper.map(c, Customer.class))
+                .toList();
+
+        this.customerRepository.saveAll(customerList);
     }
 
     @Override
@@ -141,7 +199,7 @@ public class ImportDataImpl implements ImportData {
 
         long partsCount = this.partRepository.count();
 
-        int bound = random.nextInt(3,6);
+        int bound = random.nextInt(10,21);
 
         Set<Part> partHashSet = new HashSet<>();
 
