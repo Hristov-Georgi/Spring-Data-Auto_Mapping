@@ -9,4 +9,6 @@ public interface ExportQueryData {
 
     void getAllOrderedCustomers() throws IOException, JAXBException;
 
+    void getAllToyotaCars() throws JAXBException, IOException;
+
 }
