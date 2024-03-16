@@ -2,14 +2,14 @@ package XMLProcessing.carDealerEx.service;
 
 import XMLProcessing.carDealerEx.entity.car.CarsExportWrapperDTO;
 import XMLProcessing.carDealerEx.entity.customer.OrderedCustomersExportDTO;
-import jakarta.xml.bind.JAXB;
+import XMLProcessing.carDealerEx.entity.supplier.SuppliersExportWrapperDTO;
+
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -66,5 +66,22 @@ public class ExportQueryDataImpl implements ExportQueryData {
         marshaller.marshal(cars, bufferedWriter);
 
         bufferedWriter.close();
+    }
+
+    @Override
+    public void getAllSuppliersThatNotImportPars() throws JAXBException, IOException {
+        SuppliersExportWrapperDTO suppliers = this.supplierService.selectAllNotImportParts();
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(SuppliersExportWrapperDTO.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+        BufferedWriter bufferedWriter = new BufferedWriter(
+                new FileWriter(CAR_DEALER_XML_EXPORT_DATA_FOLDER_PATH + LOCAL_SUPPLIERS_XML_FILE));
+
+        marshaller.marshal(suppliers, bufferedWriter);
+
+        bufferedWriter.close();
+
     }
 }
