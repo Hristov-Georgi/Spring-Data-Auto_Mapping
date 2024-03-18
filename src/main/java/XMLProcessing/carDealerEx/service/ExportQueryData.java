@@ -13,4 +13,6 @@ public interface ExportQueryData {
 
     void getAllSuppliersThatNotImportPars() throws JAXBException, IOException;
 
+    void getCarsAndTheirParts() throws JAXBException, IOException;
+
 }

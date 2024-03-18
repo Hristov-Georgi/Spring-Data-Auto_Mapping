@@ -1,9 +1,8 @@
 package XMLProcessing.carDealerEx.service;
 
-import XMLProcessing.carDealerEx.entity.car.Car;
-import XMLProcessing.carDealerEx.entity.car.CarExportDTO;
-import XMLProcessing.carDealerEx.entity.car.CarsExportWrapperDTO;
+import XMLProcessing.carDealerEx.entity.car.*;
 import XMLProcessing.carDealerEx.repositories.CarRepository;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,4 +33,19 @@ public class CarServiceImpl implements CarService {
 
         return new CarsExportWrapperDTO(carExportDTO);
     }
+
+    @Transactional
+    @Override
+    public CarsWithPartsListWrapperDTO selectAllCarsAndTheirParts() {
+
+        List<Car> carList = this.carRepository.findAllWithPartsList();
+
+        List<CarMakeModelDistancePartsListDTO> carsDTO = carList.stream()
+                .map(c -> this.modelMapper.map(c, CarMakeModelDistancePartsListDTO.class))
+                .toList();
+
+        return new CarsWithPartsListWrapperDTO(carsDTO);
+    }
+
+
 }

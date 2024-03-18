@@ -1,6 +1,7 @@
 package XMLProcessing.carDealerEx.service;
 
 import XMLProcessing.carDealerEx.entity.car.CarsExportWrapperDTO;
+import XMLProcessing.carDealerEx.entity.car.CarsWithPartsListWrapperDTO;
 import XMLProcessing.carDealerEx.entity.customer.OrderedCustomersExportDTO;
 import XMLProcessing.carDealerEx.entity.supplier.SuppliersExportWrapperDTO;
 
@@ -20,7 +21,7 @@ public class ExportQueryDataImpl implements ExportQueryData {
     private static final String ORDERED_CUSTOMERS_XML_FILE = "ordered-customers.xml";
     private static final String TOYOTA_CARS_XML_FILE = "toyota-cars.xml";
     private static final String LOCAL_SUPPLIERS_XML_FILE = "local-suppliers.xml";
-    private static final String CARS_WITH_PARTS_LIST_XML_FILE = "cars-and-parts.xml";
+    private static final String CARS_AND_PARTS_XML_FILE = "cars-and-parts.xml";
 
     private final CustomerService customerService;
     private final CarService carService;
@@ -80,6 +81,23 @@ public class ExportQueryDataImpl implements ExportQueryData {
                 new FileWriter(CAR_DEALER_XML_EXPORT_DATA_FOLDER_PATH + LOCAL_SUPPLIERS_XML_FILE));
 
         marshaller.marshal(suppliers, bufferedWriter);
+
+        bufferedWriter.close();
+
+    }
+
+    @Override
+    public void getCarsAndTheirParts() throws JAXBException, IOException {
+        CarsWithPartsListWrapperDTO cars = this.carService.selectAllCarsAndTheirParts();
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(CarsWithPartsListWrapperDTO.class);
+        Marshaller marshaller = jaxbContext.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+        BufferedWriter bufferedWriter = new BufferedWriter(
+                new FileWriter(CAR_DEALER_XML_EXPORT_DATA_FOLDER_PATH + CARS_AND_PARTS_XML_FILE));
+
+        marshaller.marshal(cars, bufferedWriter);
 
         bufferedWriter.close();
 

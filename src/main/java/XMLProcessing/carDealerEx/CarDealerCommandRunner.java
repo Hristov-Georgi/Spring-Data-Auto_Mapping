@@ -34,6 +34,7 @@ public class CarDealerCommandRunner implements CommandLineRunner {
 //        this.exportQueryData.getAllOrderedCustomers();
 //        this.exportQueryData.getAllToyotaCars();
 //        this.exportQueryData.getAllSuppliersThatNotImportPars();
+        this.exportQueryData.getCarsAndTheirParts();
     }
 
 
